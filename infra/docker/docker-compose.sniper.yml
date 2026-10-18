@@ -1,0 +1,24 @@
+# Discord-only sniper fleet for Vultr (VPS2). No public HTTP — connects to Hostinger Redis + Neon.
+#
+# VPS2: SNIPER_VPS_POOL=vps2  (discord)
+#
+# Deploy:
+#   SNIPER_VPS_POOL=vps2 docker compose -f infra/docker/docker-compose.sniper.yml up -d --build --scale sniper-node=8
+
+services:
+  sniper-node:
+    build:
+      context: ../../apps/api
+      dockerfile: ../../infra/docker/api.Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - API_MODE=sniper
+      - SNIPER_VPS_POOL=${SNIPER_VPS_POOL:-vps2}
+      - SNIPER_DISTRIBUTED=true
+      - SNIPER_NODE_MAX_JOBS=1
+    volumes:
+      - user_data:/var/lib/usersniper/data
+
+volumes:
+  user_data:

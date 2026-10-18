@@ -1,0 +1,402 @@
+/* ────────────────────────────────────────────────────────
+   ROBLOX THEME OVERRIDES
+──────────────────────────────────────────────────────── */
+
+/* Roblox progress ring */
+.rbx-ring {
+    stroke: var(--rbx-accent) !important;
+    
+}
+
+/* Roblox running status pill */
+.status-pill.rbx-running .status-dot {
+    background: var(--rbx-accent);
+    box-shadow: 0 0 8px var(--rbx-accent);
+    animation: pulse 1.5s infinite;
+}
+
+/* Roblox hit items */
+.rbx-hit-item {
+    background: rgba(226, 35, 26, 0.05) !important;
+    border: 1px solid rgba(226, 35, 26, 0.15) !important;
+}
+
+/* Roblox primary button */
+.rbx-btn-primary {
+    background: var(--rbx-accent) !important;
+    color: white;
+    box-shadow: 0 4px 15px var(--rbx-accent-glow);
+}
+
+.rbx-btn-primary:hover {
+    background: var(--rbx-accent-hover) !important;
+    transform: translateY(-1px);
+}
+
+/* Roblox nav active */
+.nav-item.active[data-tab="roblox-dashboard"],
+.nav-item.active[data-tab="roblox-sniper"] {
+    background: var(--rbx-accent) !important;
+    box-shadow: 0 4px 12px var(--rbx-accent-glow) !important;
+}
+
+/* Roblox accent stat card */
+.rbx-accent-card .stat-value {
+    color: var(--rbx-accent);
+}
+
+
+/* ────────────────────────────────────────────────────────
+   WEBHOOK MODE TOGGLE
+──────────────────────────────────────────────────────── */
+.webhook-mode-toggle {
+    display: flex;
+    gap: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    width: fit-content;
+}
+
+.mode-btn {
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+}
+
+.mode-btn:not(:last-child) {
+    border-right: 1px solid var(--border-color);
+}
+
+.mode-btn:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.mode-btn.active {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 2px 10px var(--accent-glow);
+}
+
+.webhook-ping-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.webhook-brace-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.webhook-brace-btn {
+    min-width: 34px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-main);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.webhook-brace-btn:hover {
+    background: rgba(124, 58, 237, 0.18);
+    border-color: rgba(167, 139, 250, 0.45);
+}
+
+.webhook-brace-btn.copied {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(52, 211, 153, 0.45);
+    color: #6ee7b7;
+}
+
+
+/* ────────────────────────────────────────────────────────
+   MINECRAFT THEME
+──────────────────────────────────────────────────────── */
+.mc-ring { stroke: var(--mc-accent) !important;  }
+.status-pill.mc-running .status-dot { background: var(--mc-accent); box-shadow: 0 0 8px var(--mc-accent); animation: pulse 1.5s infinite; }
+.mc-hit-item { background: rgba(76, 175, 80, 0.05) !important; border: 1px solid rgba(76, 175, 80, 0.15) !important; }
+.mc-btn-primary { background: var(--mc-accent) !important; color: white; box-shadow: 0 4px 15px var(--mc-accent-glow); }
+.mc-btn-primary:hover { background: var(--mc-accent-hover) !important; transform: translateY(-1px); }
+.nav-item.active[data-tab="mc-dashboard"],
+.nav-item.active[data-tab="mc-sniper"] { background: var(--mc-accent) !important; box-shadow: 0 4px 12px var(--mc-accent-glow) !important; }
+.mc-accent-card .stat-value { color: var(--mc-accent); }
+
+
+/* ────────────────────────────────────────────────────────
+   TELEGRAM THEME
+──────────────────────────────────────────────────────── */
+.tg-ring { stroke: var(--tg-accent) !important;  }
+.status-pill.tg-running .status-dot { background: var(--tg-accent); box-shadow: 0 0 8px var(--tg-accent); animation: pulse 1.5s infinite; }
+.tg-hit-item { background: rgba(0, 136, 204, 0.05) !important; border: 1px solid rgba(0, 136, 204, 0.15) !important; }
+.tg-btn-primary { background: var(--tg-accent) !important; color: white; box-shadow: 0 4px 15px var(--tg-accent-glow); }
+.tg-btn-primary:hover { background: var(--tg-accent-hover) !important; transform: translateY(-1px); }
+.nav-item.active[data-tab="tg-dashboard"],
+.nav-item.active[data-tab="tg-sniper"] { background: var(--tg-accent) !important; box-shadow: 0 4px 12px var(--tg-accent-glow) !important; }
+.tg-accent-card .stat-value { color: var(--tg-accent); }
+
+
+/* ────────────────────────────────────────────────────────
+   TOGGLE SWITCH
+──────────────────────────────────────────────────────── */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    transition: 0.3s;
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+input:checked + .toggle-slider {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+}
+
+input:checked + .toggle-slider::before {
+    transform: translateX(20px);
+}
+
+
+/* ────────────────────────────────────────────────────────
+   INSTAGRAM THEME
+──────────────────────────────────────────────────────── */
+.ig-ring { stroke: var(--ig-accent) !important;  }
+.status-pill.ig-running .status-dot { background: var(--ig-accent); box-shadow: 0 0 8px var(--ig-accent); animation: pulse 1.5s infinite; }
+.ig-hit-item { background: rgba(225, 48, 108, 0.05) !important; border: 1px solid rgba(225, 48, 108, 0.15) !important; }
+.ig-btn-primary { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%) !important; color: white; box-shadow: 0 4px 15px var(--ig-accent-glow); border: none; }
+.ig-btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.nav-item.active[data-tab="ig-dashboard"],
+.nav-item.active[data-tab="ig-sniper"] { background: var(--ig-accent) !important; box-shadow: 0 4px 12px var(--ig-accent-glow) !important; }
+.ig-accent-card .stat-value { color: var(--ig-accent); }
+
+
+/* ────────────────────────────────────────────────────────
+   TIKTOK THEME
+──────────────────────────────────────────────────────── */
+.tt-ring { stroke: url(#tt-ring-gradient) var(--tt-accent) !important; filter: drop-shadow(0 0 6px var(--tt-accent-glow)); }
+.status-pill.tt-running .status-dot { background: var(--tt-accent); box-shadow: 0 0 10px var(--tt-accent), 0 0 18px var(--tt-accent-glow-pink); animation: pulse 1.5s infinite; }
+.status-pill.tt-running .status-text { color: var(--tt-accent); }
+.tt-hit-item {
+    background: linear-gradient(135deg, rgba(254, 44, 85, 0.08) 0%, rgba(37, 244, 238, 0.06) 100%) !important;
+    border: 1px solid rgba(37, 244, 238, 0.22) !important;
+    border-radius: 10px;
+    padding: 10px 14px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.tt-hit-item:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(37, 244, 238, 0.12); }
+.tt-hit-item .hit-name { font-weight: 700; letter-spacing: 0.02em; color: var(--tt-accent); }
+.tt-hit-item .hit-prefix { color: var(--tt-accent-2); font-weight: 700; margin-right: 2px; }
+.tt-hit-item .hit-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #000;
+    background: linear-gradient(90deg, var(--tt-accent), #7afff8);
+    padding: 3px 8px;
+    border-radius: 999px;
+}
+.tt-hit-item { display: flex; align-items: center; gap: 6px; }
+.tt-btn-primary, .tt-btn-start {
+    background: linear-gradient(135deg, var(--tt-accent-2) 0%, #ff6090 50%, var(--tt-accent) 100%) !important;
+    color: #000 !important;
+    font-weight: 800;
+    border: none !important;
+    box-shadow: 0 4px 20px var(--tt-accent-glow-pink), 0 0 24px var(--tt-accent-glow);
+}
+.tt-btn-primary:hover, .tt-btn-start:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.nav-item.active[data-tab="tt-dashboard"],
+.nav-item.active[data-tab="tt-sniper"] {
+    background: linear-gradient(135deg, var(--tt-accent-2), var(--tt-accent)) !important;
+    color: #000 !important;
+    box-shadow: 0 4px 16px var(--tt-accent-glow) !important;
+}
+.nav-item.active[data-tab="tt-dashboard"] .nav-icon,
+.nav-item.active[data-tab="tt-sniper"] .nav-icon { color: #000 !important; }
+.tt-accent-card .stat-value { color: var(--tt-accent); }
+
+/* TikTok dashboard panel */
+.tt-panel { --tt-panel-bg: rgba(8, 10, 14, 0.55); }
+.tt-header { margin-bottom: 4px; }
+.tt-brand-row { display: flex; align-items: center; gap: 14px; min-height: 48px; }
+.tt-brand-text { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.tt-brand-icon {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(254, 44, 85, 0.15), rgba(37, 244, 238, 0.12));
+    border: 1px solid rgba(37, 244, 238, 0.2);
+    color: var(--tt-accent);
+    box-shadow: 0 0 20px var(--tt-accent-glow);
+    line-height: 0;
+    overflow: hidden;
+}
+.tt-brand-icon svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+}
+.tt-title {
+    background: linear-gradient(90deg, #fff 0%, var(--tt-accent) 55%, var(--tt-accent-2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.tt-desc { color: var(--text-muted); font-size: 13px; margin-top: 2px; }
+.tt-stats-row .tt-stat-card {
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--tt-panel-bg);
+}
+.tt-stat-hits { border-left: 3px solid var(--tt-accent) !important; }
+.tt-stat-hits .stat-value { color: var(--tt-accent); text-shadow: 0 0 20px var(--tt-accent-glow); }
+.tt-stat-warn .stat-value { color: #ffb020; }
+.tt-progress-card, .tt-hits-card, .tt-sniper-hero, .tt-sniper-info {
+    border: 1px solid rgba(37, 244, 238, 0.1);
+    background: var(--tt-panel-bg);
+}
+.tt-card-title {
+    color: var(--tt-accent) !important;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.tt-ring-wrap { box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.55), 0 0 32px var(--tt-accent-glow) !important; }
+.tt-progress-pct { color: #fff; font-weight: 800; }
+.tt-meta-grid { grid-template-columns: repeat(3, 1fr) !important; }
+.tt-meta-grid .meta-label { font-size: 10px; letter-spacing: 0.08em; color: var(--text-muted); }
+.tt-eta { color: var(--tt-accent) !important; font-weight: 600; }
+.tt-rl { color: var(--danger) !important; }
+.tt-err { color: var(--warning) !important; }
+.tt-hits-hint { font-size: 12px; color: var(--text-muted); margin: -8px 0 12px; line-height: 1.4; }
+.tt-hits-empty { color: var(--text-muted); font-style: italic; }
+.tt-target-bar {
+    border: 1px solid rgba(37, 244, 238, 0.15);
+    background: linear-gradient(90deg, rgba(254, 44, 85, 0.06), rgba(37, 244, 238, 0.04));
+}
+.tt-target-label { color: var(--tt-accent) !important; font-weight: 700; letter-spacing: 0.1em; }
+.tt-target-name { color: #fff; font-size: 1.05rem; }
+.tt-sniper-hero { border-color: rgba(37, 244, 238, 0.18) !important; }
+.tt-engine-title { color: var(--tt-accent) !important; }
+.tt-engine-desc { color: var(--text-muted); line-height: 1.55; max-width: 720px; }
+.tt-engine-desc code { color: var(--tt-accent); font-size: 12px; background: rgba(37, 244, 238, 0.08); padding: 2px 6px; border-radius: 4px; }
+.tt-btn-pause, .tt-btn-resume { border-color: rgba(37, 244, 238, 0.35) !important; color: var(--tt-accent) !important; }
+#tab-tt-dashboard .progress-ring-wrap { box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px var(--tt-accent-glow) !important; }
+
+/* Dashboard brand chips (sync-engine beta platforms) */
+
+.sniper-panel .stat-value[id$="-stat-errors"] {
+    color: var(--warning) !important;
+}
+
+.sniper-gh .tab-header-brand .platform-brand-icon {
+    background: linear-gradient(135deg, rgba(22, 27, 34, 0.95), rgba(48, 54, 61, 0.75));
+    border-color: rgba(240, 246, 252, 0.22);
+    color: var(--gh-accent-bright);
+    box-shadow: 0 0 20px var(--gh-accent-glow);
+}
+.sniper-rd .tab-header-brand .platform-brand-icon {
+    background: linear-gradient(135deg, rgba(255, 69, 0, 0.18), rgba(255, 106, 51, 0.1));
+    border-color: rgba(255, 106, 51, 0.25);
+    color: var(--rd-accent);
+    box-shadow: 0 0 20px var(--rd-accent-glow);
+}
+.sniper-yt .tab-header-brand .platform-brand-icon {
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.18), rgba(204, 0, 0, 0.1));
+    border-color: rgba(255, 0, 0, 0.25);
+    color: var(--yt-accent);
+    box-shadow: 0 0 20px var(--yt-accent-glow);
+}
+.sniper-ep .tab-header-brand .platform-brand-icon {
+    background: linear-gradient(135deg, rgba(0, 120, 242, 0.18), rgba(0, 162, 255, 0.1));
+    border-color: rgba(0, 162, 255, 0.25);
+    color: var(--ep-accent);
+    box-shadow: 0 0 20px var(--ep-accent-glow);
+}
+.sniper-steam .tab-header-brand .platform-brand-icon {
+    background: linear-gradient(135deg, rgba(27, 40, 56, 0.95), rgba(102, 192, 244, 0.15));
+    border-color: rgba(102, 192, 244, 0.28);
+    color: var(--steam-accent);
+    box-shadow: 0 0 20px var(--steam-accent-glow);
+}
+.sniper-x .tab-header-brand .platform-brand-icon {
+    background: linear-gradient(135deg, rgba(15, 15, 15, 0.95), rgba(113, 118, 123, 0.2));
+    border-color: rgba(231, 233, 234, 0.22);
+    color: var(--x-accent);
+    box-shadow: 0 0 20px var(--x-accent-glow);
+}
+.sniper-guns .tab-header-brand .platform-brand-icon {
+    background: linear-gradient(135deg, rgba(176, 102, 255, 0.18), rgba(216, 150, 255, 0.1));
+    border-color: rgba(176, 102, 255, 0.25);
+    color: var(--guns-accent);
+    box-shadow: 0 0 20px var(--guns-accent-glow);
+}
+
+.tab-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+.platform-brand-icon {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    line-height: 0;
+}
+.platform-brand-icon svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+}

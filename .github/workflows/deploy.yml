@@ -1,0 +1,227 @@
+name: Deploy API and sniper fleet (Hostinger + Vultr)
+
+# Frontend deploys automatically via Vercel (connected to this repo, root: apps/web).
+# Hostinger (VPS1): control API + Redis + social/gaming snipers (vps3).
+# Vultr (VPS2): Discord-only sniper fleet (vps2).
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      # Frontend-only commits deploy via Vercel — don't bounce the API/fleet.
+      - "apps/web/**"
+      - "**/*.md"
+  workflow_dispatch:
+
+jobs:
+  deploy-vps1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check VPS1 credentials
+        id: config
+        env:
+          VPS_HOST: ${{ secrets.VPS1_HOST }}
+          VPS_USER: ${{ secrets.VPS1_USER }}
+          VPS_KEY: ${{ secrets.VPS1_SSH_KEY }}
+        run: |
+          if [ -n "$VPS_HOST" ] && [ -n "$VPS_USER" ] && [ -n "$VPS_KEY" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::VPS1 deploy skipped — set VPS1_HOST, VPS1_USER, VPS1_SSH_KEY."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload code and deploy VPS1 (native SSH)
+        if: steps.config.outputs.ready == 'true'
+        env:
+          VPS_HOST: ${{ secrets.VPS1_HOST }}
+          VPS_USER: ${{ secrets.VPS1_USER }}
+          VPS_KEY: ${{ secrets.VPS1_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          HOST="$(printf '%s' "$VPS_HOST" | tr -d '\r\n' | xargs)"
+          USER="$(printf '%s' "$VPS_USER" | tr -d '\r\n' | xargs)"
+          printf '%s' "$VPS_KEY" | tr -d '\r' > /tmp/vps1.key
+          chmod 600 /tmp/vps1.key
+          SSH=(ssh -i /tmp/vps1.key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=30)
+          SCP=(scp -i /tmp/vps1.key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=30)
+
+          tar czf /tmp/vps1.tgz -C "$GITHUB_WORKSPACE" apps/api infra/docker infra/nginx
+          "${SSH[@]}" "${USER}@${HOST}" "mkdir -p /opt/usersniper"
+          "${SCP[@]}" /tmp/vps1.tgz "${USER}@${HOST}:/tmp/vps1.tgz"
+          "${SSH[@]}" "${USER}@${HOST}" "tar xzf /tmp/vps1.tgz -C /opt/usersniper && rm /tmp/vps1.tgz"
+
+          "${SSH[@]}" "${USER}@${HOST}" 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          cd /opt/usersniper
+          ENV_FILE=infra/docker/.env
+          if [ -f "$ENV_FILE" ]; then
+            grep -q '^PAYPAL_EMAIL=' "$ENV_FILE" && sed -i 's|^PAYPAL_EMAIL=.*|PAYPAL_EMAIL=ovapaf@gmail.com|' "$ENV_FILE" || echo 'PAYPAL_EMAIL=ovapaf@gmail.com' >> "$ENV_FILE"
+            grep -q '^CRYPTO_BTC_ADDRESS=' "$ENV_FILE" && sed -i 's|^CRYPTO_BTC_ADDRESS=.*|CRYPTO_BTC_ADDRESS=bc1qzftnp5pft7tmxmm79ra5hq6qeala74h743v5q7|' "$ENV_FILE" || echo 'CRYPTO_BTC_ADDRESS=bc1qzftnp5pft7tmxmm79ra5hq6qeala74h743v5q7' >> "$ENV_FILE"
+            grep -q '^CRYPTO_ETH_ADDRESS=' "$ENV_FILE" && sed -i 's|^CRYPTO_ETH_ADDRESS=.*|CRYPTO_ETH_ADDRESS=0x05CB9bE55693C34d8e53920748B607122FE5ae88|' "$ENV_FILE" || echo 'CRYPTO_ETH_ADDRESS=0x05CB9bE55693C34d8e53920748B607122FE5ae88' >> "$ENV_FILE"
+            grep -q '^CRYPTO_LTC_ADDRESS=' "$ENV_FILE" && sed -i 's|^CRYPTO_LTC_ADDRESS=.*|CRYPTO_LTC_ADDRESS=LNPrm5HV2TPZuqQKj7qUyA2sfDtPBizZCq|' "$ENV_FILE" || echo 'CRYPTO_LTC_ADDRESS=LNPrm5HV2TPZuqQKj7qUyA2sfDtPBizZCq' >> "$ENV_FILE"
+            grep -q '^CRYPTO_USDT_ADDRESS=' "$ENV_FILE" && sed -i 's|^CRYPTO_USDT_ADDRESS=.*|CRYPTO_USDT_ADDRESS=0x05CB9bE55693C34d8e53920748B607122FE5ae88|' "$ENV_FILE" || echo 'CRYPTO_USDT_ADDRESS=0x05CB9bE55693C34d8e53920748B607122FE5ae88' >> "$ENV_FILE"
+            grep -q '^CRYPTO_AUTO_ACTIVATE=' "$ENV_FILE" && sed -i 's|^CRYPTO_AUTO_ACTIVATE=.*|CRYPTO_AUTO_ACTIVATE=true|' "$ENV_FILE" || echo 'CRYPTO_AUTO_ACTIVATE=true' >> "$ENV_FILE"
+            grep -q '^TRIAL_PROXY_LINES=' "$ENV_FILE" && sed -i 's|^TRIAL_PROXY_LINES=.*|TRIAL_PROXY_LINES=c06e5d5a6a4fa37f8eeb:234f0ba20a36aadc@gw.dataimpulse.com:823|' "$ENV_FILE" || echo 'TRIAL_PROXY_LINES=c06e5d5a6a4fa37f8eeb:234f0ba20a36aadc@gw.dataimpulse.com:823' >> "$ENV_FILE"
+          fi
+          # Discord: 6 Hostinger + 6 Vultr = 12 slots — cuts queued backlog under load.
+          DISCORD_REPLICAS="${SNIPER_VPS1_REPLICAS:-6}"
+          SOCIAL_REPLICAS="${SNIPER_SOCIAL_REPLICAS:-6}"
+          COMPOSE="docker compose -f infra/docker/docker-compose.control.yml"
+          $COMPOSE down --remove-orphans || true
+          docker rm -f $($COMPOSE ps -aq) 2>/dev/null || true
+          # Stale name conflicts when compose project label drifts.
+          docker ps -a --format '{{.Names}}' | grep -E '^docker-(api|nginx|redis|sniper)' | xargs -r docker rm -f || true
+          docker container prune -f >/dev/null 2>&1 || true
+          $COMPOSE build api sniper-node sniper-social
+          $COMPOSE up -d --remove-orphans redis
+          sleep 2
+          $COMPOSE up -d --force-recreate --remove-orphans api
+          sleep 2
+          $COMPOSE up -d --force-recreate --remove-orphans nginx
+          $COMPOSE up -d --force-recreate --remove-orphans --scale sniper-node="$DISCORD_REPLICAS" sniper-node
+          $COMPOSE up -d --force-recreate --scale sniper-social="$SOCIAL_REPLICAS" sniper-social
+          $COMPOSE exec -T api python -m scripts.sync_admins || true
+          $COMPOSE ps
+          OK=0
+          for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+            if curl -fsS http://127.0.0.1/health | grep -q '"status":"ok"'; then
+              OK=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$OK" != "1" ]; then
+            echo "VPS1 health check failed"
+            $COMPOSE logs --tail=80 api || true
+            exit 1
+          fi
+          echo "VPS1 deploy healthy (API + social; Discord on Vultr)"
+          REMOTE
+
+  deploy-vps2:
+    runs-on: ubuntu-latest
+    needs: deploy-vps1
+    if: ${{ always() && !cancelled() }}
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check VPS2 credentials
+        id: config
+        env:
+          VPS_HOST: ${{ secrets.VPS2_HOST }}
+          VPS_USER: ${{ secrets.VPS2_USER }}
+          VPS_KEY: ${{ secrets.VPS2_SSH_KEY }}
+          VPS1_KEY: ${{ secrets.VPS1_SSH_KEY }}
+        run: |
+          if [ -n "$VPS_HOST" ] && [ -n "$VPS_USER" ]; then
+            if [ -n "$VPS_KEY" ] || [ -n "$VPS1_KEY" ]; then
+              echo "ready=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          # Password fallback always available for Vultr panel password
+          if [ -n "$VPS_HOST" ] && [ -n "$VPS_USER" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "::warning::VPS2 deploy skipped — set VPS2_HOST / VPS2_USER."
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy VPS2 Discord fleet (Vultr)
+        if: steps.config.outputs.ready == 'true'
+        env:
+          HOST: ${{ secrets.VPS2_HOST }}
+          USER: ${{ secrets.VPS2_USER }}
+          PASS: "Yn2_8QJfcmB@ZWSd"
+          VPS1_KEY: ${{ secrets.VPS1_SSH_KEY }}
+          VPS2_KEY: ${{ secrets.VPS2_SSH_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          VPS1_HOST: ${{ secrets.VPS1_HOST }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+          HOST="$(printf '%s' "$HOST" | tr -d '\r\n' | xargs)"
+          USER="$(printf '%s' "$USER" | tr -d '\r\n' | xargs)"
+          if [ -z "$USER" ] || ! printf '%s' "$USER" | grep -Eq '^[a-z_][a-z0-9_-]*$'; then
+            echo "::warning::VPS2_USER invalid or empty — using root"
+            USER=root
+          fi
+          KEY="${VPS2_KEY:-$VPS1_KEY}"
+          printf '%s' "$KEY" | tr -d '\r' > /tmp/deploy.key
+          chmod 600 /tmp/deploy.key
+          PUB=$(ssh-keygen -y -f /tmp/deploy.key)
+          SSH_BASE=(ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20)
+
+          if sshpass -p "$PASS" "${SSH_BASE[@]}" -o PreferredAuthentications=password -o PubkeyAuthentication=no "${USER}@${HOST}" "echo pass-ok"; then
+            SSH=(sshpass -p "$PASS" "${SSH_BASE[@]}" -o PreferredAuthentications=password -o PubkeyAuthentication=no "${USER}@${HOST}")
+            SCP=(sshpass -p "$PASS" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null)
+            echo "Vultr: password auth OK (${USER}@${HOST})"
+          elif "${SSH_BASE[@]}" -i /tmp/deploy.key "${USER}@${HOST}" "echo key-ok"; then
+            SSH=("${SSH_BASE[@]}" -i /tmp/deploy.key "${USER}@${HOST}")
+            SCP=(scp -i /tmp/deploy.key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null)
+            echo "Vultr: key auth OK (${USER}@${HOST})"
+          elif [ "$USER" != "root" ] && sshpass -p "$PASS" "${SSH_BASE[@]}" -o PreferredAuthentications=password -o PubkeyAuthentication=no "root@${HOST}" "echo pass-ok"; then
+            USER=root
+            SSH=(sshpass -p "$PASS" "${SSH_BASE[@]}" -o PreferredAuthentications=password -o PubkeyAuthentication=no "root@${HOST}")
+            SCP=(sshpass -p "$PASS" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null)
+            echo "Vultr: password auth OK (root@${HOST})"
+          elif [ "$USER" != "root" ] && "${SSH_BASE[@]}" -i /tmp/deploy.key "root@${HOST}" "echo key-ok"; then
+            USER=root
+            SSH=("${SSH_BASE[@]}" -i /tmp/deploy.key "root@${HOST}")
+            SCP=(scp -i /tmp/deploy.key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null)
+            echo "Vultr: key auth OK (root@${HOST})"
+          else
+            echo "::error::Cannot auth to Vultr"
+            exit 1
+          fi
+
+          "${SSH[@]}" "mkdir -p ~/.ssh && chmod 700 ~/.ssh && grep -Fq '$(echo "$PUB" | awk '{print $2}')' ~/.ssh/authorized_keys 2>/dev/null || echo '$PUB' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+          "${SSH[@]}" "mkdir -p /opt/usersniper"
+          tar czf /tmp/vps2.tgz -C "$GITHUB_WORKSPACE" apps/api infra/docker
+          "${SCP[@]}" /tmp/vps2.tgz "${USER}@${HOST}:/tmp/vps2.tgz"
+          "${SSH[@]}" "tar xzf /tmp/vps2.tgz -C /opt/usersniper && rm /tmp/vps2.tgz"
+
+          DB_URL="${DATABASE_URL:-}"
+          if [ -z "$DB_URL" ]; then
+            DB_URL=$("${SSH_BASE[@]}" -i /tmp/deploy.key "root@${VPS1_HOST}" "grep '^DATABASE_URL=' /opt/usersniper/infra/docker/.env | cut -d= -f2-")
+          fi
+          "${SSH[@]}" "cat > /opt/usersniper/infra/docker/.env <<EOF
+          DATABASE_URL=${DB_URL}
+          USER_DATA_DIR=/var/lib/usersniper/data
+          TURBO_WORKERS=160
+          REDIS_URL=redis://${VPS1_HOST}:6379/0
+          API_MODE=sniper
+          SNIPER_VPS_POOL=vps2
+          SNIPER_DISTRIBUTED=true
+          SNIPER_NODE_MAX_JOBS=1
+          EOF
+          cd /opt/usersniper
+          export SNIPER_VPS_POOL=vps2
+          REPLICAS=\${SNIPER_VPS2_REPLICAS:-6}
+          docker compose -f infra/docker/docker-compose.sniper.yml down --remove-orphans || true
+          docker compose -f infra/docker/docker-compose.sniper.yml build sniper-node
+          docker compose -f infra/docker/docker-compose.sniper.yml up -d --force-recreate --scale sniper-node=\$REPLICAS sniper-node
+          docker compose -f infra/docker/docker-compose.sniper.yml ps
+          echo VPS2 Discord fleet deploy done
+          "
+
+  deploy-summary:
+    runs-on: ubuntu-latest
+    needs: [deploy-vps1, deploy-vps2]
+    if: always()
+    steps:
+      - name: Report deploy results
+        run: |
+          echo "VPS1 Hostinger (API + social/gaming): ${{ needs.deploy-vps1.result }}"
+          echo "VPS2 Vultr (Discord only): ${{ needs.deploy-vps2.result }}"
+          if [ "${{ needs.deploy-vps1.result }}" != "success" ]; then
+            echo "::error::VPS1 deploy failed — API / social snipers may be down."
+            exit 1
+          fi
+          if [ "${{ needs.deploy-vps2.result }}" != "success" ]; then
+            echo "::warning::VPS2 deploy failed — Discord sniper fleet may be down."
+          fi

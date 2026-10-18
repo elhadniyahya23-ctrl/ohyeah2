@@ -1,0 +1,56 @@
+name: Set user rank on VPS
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: Username to update
+        required: true
+        default: eya
+      rank:
+        description: New rank (e.g. Admin, Premium, Free Trial)
+        required: true
+        default: Admin
+
+jobs:
+  set-rank:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check VPS1 credentials
+        id: config
+        env:
+          VPS_HOST: ${{ secrets.VPS1_HOST }}
+          VPS_USER: ${{ secrets.VPS1_USER }}
+          VPS_KEY: ${{ secrets.VPS1_SSH_KEY }}
+        run: |
+          if [ -n "$VPS_HOST" ] && [ -n "$VPS_USER" ] && [ -n "$VPS_KEY" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      - name: Set rank on Hostinger
+        if: steps.config.outputs.ready == 'true'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS1_HOST }}
+          username: ${{ secrets.VPS1_USER }}
+          key: ${{ secrets.VPS1_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd /opt/usersniper
+            USERNAME="${{ github.event.inputs.username }}"
+            RANK="${{ github.event.inputs.rank }}"
+            if [ "$(echo "$RANK" | tr '[:upper:]' '[:lower:]')" = "admin" ]; then
+              case "$(echo "$USERNAME" | tr '[:upper:]' '[:lower:]')" in
+                asiopitos|eya) ;;
+                *)
+                  echo "Refused: only asiopitos and eya may be Admin"
+                  exit 1
+                  ;;
+              esac
+            fi
+            docker compose -f infra/docker/docker-compose.control.yml exec -T api \
+              python -m scripts.set_rank "$USERNAME" "$RANK"

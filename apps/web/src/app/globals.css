@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@import "../styles/phantom/tokens.css";
+@import "../styles/phantom/base.css";
+@import "../styles/phantom/layout.css";
+@import "../styles/phantom/components.css";
+@import "../styles/phantom/platforms.css";
+@import "../styles/phantom/responsive.css";
+@import "../styles/phantom/shop.css";
+@import "../styles/phantom/admin.css";
+@import "../styles/phantom/patches.css";

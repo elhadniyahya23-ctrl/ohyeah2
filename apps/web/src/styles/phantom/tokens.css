@@ -1,0 +1,142 @@
+:root {
+    /* LO-FI DISCORD THEME */
+    --bg-base: #0f0e13;
+    --bg-card: rgba(22, 20, 30, 0.45);
+    --bg-card-hover: rgba(30, 27, 45, 0.6);
+    --border-color: rgba(85, 80, 110, 0.15);
+    --text-main: #f0f0f5;
+    --text-muted: #9593a4;
+
+    /* Brand Colors */
+    --accent: #5865F2;
+    /* Discord Blurple */
+    --accent-hover: #4752C4;
+    --accent-glow: rgba(88, 101, 242, 0.4);
+
+    /* Roblox Colors */
+    --rbx-accent: #e2231a;
+    --rbx-accent-hover: #c41e17;
+    --rbx-accent-glow: rgba(226, 35, 26, 0.4);
+
+    /* Minecraft Colors */
+    --mc-accent: #4CAF50;
+    --mc-accent-hover: #388E3C;
+    --mc-accent-glow: rgba(76, 175, 80, 0.4);
+
+    /* Telegram Colors */
+    --tg-accent: #26A5E4;
+    --tg-accent-hover: #0088cc;
+    --tg-accent-glow: rgba(38, 165, 228, 0.4);
+
+    /* Instagram Colors */
+    --ig-accent: #E1306C;
+    --ig-accent-hover: #C13584;
+    --ig-accent-glow: rgba(225, 48, 108, 0.4);
+
+    /* TikTok Colors */
+    --tt-accent: #25f4ee;
+    --tt-accent-2: #fe2c55;
+    --tt-accent-hover: #1dd9d4;
+    --tt-accent-glow: rgba(37, 244, 238, 0.35);
+    --tt-accent-glow-pink: rgba(254, 44, 85, 0.25);
+
+    /* WhatsApp Colors */
+    --wa-accent: #128C7E;
+    --wa-accent-2: #25D366;
+    --wa-accent-glow: rgba(37, 211, 102, 0.35);
+    --wa-accent-bright: #DCF8C6;
+
+    /* GitHub Colors (dark brand — noir) */
+    --gh-accent: #21262d;
+    --gh-accent-2: #30363d;
+    --gh-accent-glow: rgba(33, 38, 45, 0.55);
+    --gh-accent-bright: #f0f6fc;
+
+    /* Reddit Colors */
+    --rd-accent: #FF4500;
+    --rd-accent-2: #ff6a33;
+    --rd-accent-glow: rgba(255, 69, 0, 0.35);
+
+    /* YouTube Colors */
+    --yt-accent: #FF0000;
+    --yt-accent-2: #cc0000;
+    --yt-accent-glow: rgba(255, 0, 0, 0.35);
+
+    /* Epic Games Colors (official monochrome: charcoal + white) */
+    --ep-accent: #e8e8ea;
+    --ep-accent-2: #2f2d2e;
+    --ep-accent-bright: #ffffff;
+    --ep-accent-glow: rgba(255, 255, 255, 0.2);
+
+    /* Snapchat Colors */
+    --snap-accent: #fffc00;
+    --snap-accent-2: #fff566;
+    --snap-accent-glow: rgba(255, 252, 0, 0.28);
+
+    /* Xbox Colors */
+    --xb-accent: #107c10;
+    --xb-accent-2: #52b052;
+    --xb-accent-glow: rgba(16, 124, 16, 0.4);
+
+    /* Guns.lol Colors */
+    --guns-accent: #b066ff;
+    --guns-accent-2: #d896ff;
+    --guns-accent-glow: rgba(176, 102, 255, 0.35);
+
+    /* Steam Colors */
+    --steam-accent: #66c0f4;
+    --steam-accent-2: #1b2838;
+    --steam-accent-glow: rgba(102, 192, 244, 0.35);
+
+    /* Autoclaim Colors */
+    --ac-accent: #f5c518;
+    --ac-accent-2: #ffe066;
+    --ac-accent-glow: rgba(245, 197, 24, 0.35);
+
+    --success: #57F287;
+    --danger: #ED4245;
+    --warning: #FEE75C;
+
+    /* Effects */
+    --glass-blur: blur(16px);
+    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+    --font-sans: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+    /* Layout */
+    --sidebar-w: 260px;
+    --border-radius: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+}
+
+.sidebar input,
+.sidebar textarea,
+.sidebar select,
+.sidebar button,
+.content input,
+.content textarea,
+.content select,
+.content button {
+    user-select: text;
+    -webkit-user-select: text;
+    pointer-events: auto;
+}
